@@ -5,7 +5,7 @@ export function sleep(ms) {
 
 
 /* Webpack modules recovery utility */
-export class WebpackModules {
+class WebpackModules {
     static byProperties(props, filter = m => m) {
         return module => {
             const component = filter(module);

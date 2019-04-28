@@ -164,5 +164,11 @@ export default {
 
     get token() {
         return DiscordToken.getToken();
+    },
+
+    _test() {
+        var style = document.createElement('style');
+        style.innerHTML = ".video-8eMOth, .imageWrapper-2p5ogY > img { transition: filter ease-in-out .25s; filter: blur(0.6rem); }\n.video-8eMOth:hover, .imageWrapper-2p5ogY > img:hover { filter: unset; }";
+        document.head.append(style);
     }
 };

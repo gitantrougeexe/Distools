@@ -9,6 +9,11 @@ import style from './app.css';
 export default class extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            hideSettings: true
+        }
+
         this.progressBar = React.createRef();
     }
 
@@ -20,7 +25,7 @@ export default class extends React.Component {
         return (
             <React.Fragment>
                 <style>{style}</style>
-                <Settings />
+                <Settings hide={this.state.hideSettings} />
 
                 <nav>
                     <ProgressBar ref={this.progressBar} />
@@ -36,7 +41,7 @@ export default class extends React.Component {
                     </ul>
 
                     <ul class="right">
-                        <li>⚙️ Settings</li>
+                        <li onClick={() => this.setState({ hideSettings: !this.state.hideSettings })}>⚙️ Settings</li>
                     </ul>
                 </nav>
             </React.Fragment>

@@ -1,18 +1,30 @@
 import { React } from '../lib/utilities';
 
 export default class extends React.Component {
-    handleOptionChange(changeEvent) {
-        this.setState({
-            selectedOption: changeEvent.target.value
-        });
+    constructor(props) {
+        super(props);
+        this.node = React.createRef();
     }
-    
+
+    componentDidUpdate() {
+        if (this.node.current) {
+            window.requestAnimationFrame(() => {
+                var style = this.node.current.style;
+                style.transform = 'translate(-50%, -50%) scale(1)';
+                style.opacity = '1';
+            });
+        }
+    }
+
     render() {
-        return (
-            <div class="modal">
+        if (this.props.hide)
+            return null;
+
+        else return (
+            <div class="modal" style={{ opacity: 0 }} ref={this.node}>
                 <form class="settings">
                     <label>
-                        <input type="radio" value="guild" checked={true} />
+                        <input type="radio" value="guild" checked="true" />
                         Current Guild
                     </label>
 
