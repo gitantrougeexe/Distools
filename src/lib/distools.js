@@ -5,6 +5,7 @@ import {
     DiscordUser,
     DiscordToken,
     DiscordMembers,
+    DiscordChannels,
     DiscordMessages,
     SelectedGuildId,
     SelectedChannelId,
@@ -130,6 +131,77 @@ export default {
         } else console.log('Index is not ready, try again.');
     },
 
+    async fetchAllMessages(channelId = this.selectedChannelId) {
+        var messages = this.messages.reverse();
+        var result = [];
+
+        do {
+            result.push(...messages);
+
+            messages = (await DiscordAPI.get({
+                url: DiscordConstants.Endpoints.MESSAGES(channelId),
+                query: {
+                    before: messages[messages.length - 1].id,
+                    limit: 100
+                }
+
+            })).body;
+        }
+        while (messages.length > 0);
+        return result.reverse();
+    },
+
+    async saveMessages() {
+        var members = this.members;
+        var member;
+
+        var messages = await this.fetchAllMessages();
+        var message;
+
+        var membersList = [];
+        var messagesList = [];
+
+        for (message of messages) {
+            messagesList.push({
+                id: message.id,
+                author: message.author.id,
+                content: message.content,
+                timestamp: message.timestamp
+            })
+        }
+
+        members.push(this.user);
+
+        for (member of members) {
+            membersList.push({
+                id: member.id,
+                username: member.username,
+                discriminator: member.discriminator,
+                avatar: member.avatar
+            });
+        }
+
+        this.downloadTextFile(`${messages[0].channel_id}.json`, JSON.stringify({
+            members: membersList,
+            conversation: messagesList
+        }, null, 2));
+    },
+
+    downloadTextFile(fileName, fileContents) {
+        var url = window.URL.createObjectURL(new Blob([fileContents], { "type": "octet/stream" }));
+        var a = document.createElement("a");
+
+        a.href = url;
+        a.download = fileName;
+        a.style.display = "none";
+
+        document.body.prepend(a);
+        a.click();
+
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    },
+
     deleteMessage(channelId, messageId) {
         return new Promise((resolve, reject) => {
             DiscordAPI.delete(`${DiscordConstants.Endpoints.MESSAGES(channelId)}/${messageId}`)
@@ -143,7 +215,8 @@ export default {
     },
 
     get members() {
-        return DiscordMembers.getMembers(this.selectedGuildId);
+        if (this.selectedGuildId) return DiscordMembers.getMembers(this.selectedGuildId);
+        else return this.selectedChannel._getUsers();
     },
 
     get selectedGuildId() {
@@ -154,12 +227,17 @@ export default {
         return SelectedChannelId.getChannelId();
     },
 
+    get selectedChannel() {
+        return DiscordChannels.getChannel(this.selectedChannelId);
+    },
+
     get messages() {
         return DiscordMessages.getMessages(this.selectedChannelId).toArray();
     },
 
-    get userId() {
-        return DiscordUser.getCurrentUser().id;
+    get user() {
+        console.log(DiscordUser);
+        return DiscordUser.getCurrentUser();
     },
 
     get token() {
