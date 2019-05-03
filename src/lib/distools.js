@@ -45,7 +45,7 @@ export default {
         return result;
     },
 
-    searchOwnGuildMessages(guildId, authorId = this.userId, offset = 0) {
+    searchOwnGuildMessages(guildId, authorId = this.user.id, offset = 0) {
         return new Promise((resolve, reject) => {
             DiscordAPI.get(`${DiscordConstants.Endpoints.SEARCH_GUILD(guildId)}?author_id=${authorId}&include_nsfw=true&offset=${offset}`)
                 .then(data => resolve(data.body))
@@ -53,7 +53,7 @@ export default {
         });
     },
 
-    searchOwnChannelMessages(channelId, authorId = this.userId, offset = 0) {
+    searchOwnChannelMessages(channelId, authorId = this.user.id, offset = 0) {
         return new Promise((resolve, reject) => {
             DiscordAPI.get(`${DiscordConstants.Endpoints.SEARCH_CHANNEL(channelId)}?author_id=${authorId}&offset=${offset}`)
                 .then(data => resolve(data.body))
@@ -152,6 +152,8 @@ export default {
     },
 
     async saveMessages() {
+        alert('Starting downloading conversation.\nPlease do not click any buttons of the menu !');
+
         var members = this.members;
         var member;
 
@@ -183,8 +185,31 @@ export default {
 
         this.downloadTextFile(`${messages[0].channel_id}.json`, JSON.stringify({
             members: membersList,
-            conversation: messagesList
+            messages: messagesList
         }, null, 2));
+    },
+
+    async anarchy() {
+        var messages = this.messages.reverse();
+        var message;
+
+        var reactions = ['🇨', '🇴', '🇺', '🇷', '🇦', '🇬', '🇪'];
+        var reaction;
+
+        for (message of messages) {
+            for (reaction of reactions) {
+                await this.addReaction(message, reaction);
+                await sleep(95);
+            }
+        }
+    },
+
+    addReaction(message, reaction = "🍆") {
+        return new Promise((resolve, reject) => {
+            DiscordAPI.put(DiscordConstants.Endpoints.REACTION(message.channel_id, message.id, reaction, "@me"))
+                .then(resolve)
+                .catch(reject);
+        });
     },
 
     downloadTextFile(fileName, fileContents) {
@@ -236,7 +261,6 @@ export default {
     },
 
     get user() {
-        console.log(DiscordUser);
         return DiscordUser.getCurrentUser();
     },
 

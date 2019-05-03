@@ -1,10 +1,9 @@
 {
   "name": "distools",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "Light and powerful utility to enhance your Discord experience.",
   "main": "src/index.js",
   "scripts": {
-    "dev": "webpack --mode development",
     "build": "webpack --mode production",
     "watch": "webpack --mode production --watch"
   },

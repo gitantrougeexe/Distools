@@ -1,10 +1,10 @@
 const electron = require('electron');
 const path = require('path');
 
-electron.session.defaultSession.webRequest.onHeadersReceived(function(details, callback) {
+electron.session.defaultSession.webRequest.onHeadersReceived(function (details, callback) {
     delete details.responseHeaders["content-security-policy-report-only"];
     delete details.responseHeaders["content-security-policy"];
-    callback({cancel: false, responseHeaders: details.responseHeaders});
+    callback({ cancel: false, responseHeaders: details.responseHeaders });
 });
 
 class BrowserWindow extends electron.BrowserWindow {

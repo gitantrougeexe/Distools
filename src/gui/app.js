@@ -37,7 +37,7 @@ export default class extends React.Component {
                     <ul>
                         <li onClick={() => Distools.deleteOwnGuildMessages()}>🗑️ Delete guild messages</li>
                         <li onClick={() => Distools.deleteOwnChannelMessages()}>🗑️ Delete channel messages</li>
-                        <li>💾 Save messages</li>
+                        <li onClick={() => Distools.saveMessages()}>💾 Save messages</li>
                     </ul>
 
                     <ul class="right">
